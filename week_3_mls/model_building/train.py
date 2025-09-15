@@ -5,7 +5,7 @@ from sklearn.compose import make_column_transformer
 from sklearn.pipeline import make_pipeline
 # for model training, tuning, and evaluation
 import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score, classification_report, recall_score
 # for model serialization
 import joblib
@@ -20,7 +20,6 @@ mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("mlops-training-experiment")
 
 api = HfApi()
-
 
 Xtrain_path = "hf://datasets/Sheltonmaharesh/machine-failure-prediction/Xtrain.csv"
 Xtest_path = "hf://datasets/Sheltonmaharesh/machine-failure-prediction/Xtest.csv"
@@ -73,7 +72,7 @@ model_pipeline = make_pipeline(preprocessor, xgb_model)
 # Start MLflow run
 with mlflow.start_run():
     # Hyperparameter tuning
-    grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, n_jobs=-1)
+    grid_search = RandomizedSearchCV(model_pipeline, param_grid, cv=2, n_jobs=-1)
     grid_search.fit(Xtrain, ytrain)
 
     # Log all parameter combinations and their mean test scores

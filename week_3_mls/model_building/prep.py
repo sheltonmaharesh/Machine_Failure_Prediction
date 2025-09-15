@@ -16,6 +16,20 @@ DATASET_PATH = "hf://datasets/Sheltonmaharesh/machine-failure-prediction/machine
 df = pd.read_csv(DATASET_PATH)
 print("Dataset loaded successfully.")
 
+rename_map = {
+    "Air temperature": "Air_temperature",
+    "Process temperature": "Process_temperature",
+    "Rotational speed": "Rotational_speed",
+    "Tool wear": "Tool_wear",
+    # keep "Torque", "Type", "UDI", "Failure" as-is
+}
+
+missing = [c for c in rename_map if c not in df.columns]
+if missing:
+    raise ValueError(f"Cannot rename: missing columns in df -> {missing}")
+
+df = df.rename(columns=rename_map)
+
 # Drop the unique identifier
 df.drop(columns=['UDI'], inplace=True)
 
